@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "outDir": "dist",
+    "noImplicitAny": true,
+    "target": "es5",
+    "rootDir": "src",
+    "moduleResolution": "node"
+  },
+  "exclude": ["sample"]
+}
