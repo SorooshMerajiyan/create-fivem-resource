@@ -4,7 +4,7 @@ import * as fsExtra from 'fs-extra';
 create();
 async function create() {
   const samplePath = path.join(__dirname, '..', 'sample');
-  const srcPath = path.join(__dirname);
+  const mainPath = path.join(__dirname, '..');
 
   const filesToRemove = [
     'package.json',
@@ -17,11 +17,15 @@ async function create() {
     'dist',
   ];
 
+  console.log(`>> Removing files.`);
   for (const file of filesToRemove) {
-    await fsExtra.remove(path.join(srcPath, file));
+    await fsExtra.remove(path.join(mainPath, file));
   }
 
-  await fsExtra.copy(samplePath, srcPath, {
+  console.log(`>> Removed ${filesToRemove.length} files.`);
+
+  console.log(`>> Copying files.`);
+  await fsExtra.copy(samplePath, mainPath, {
     filter(src) {
       if (src.includes('node_modules')) return false;
 
@@ -29,4 +33,5 @@ async function create() {
     },
     recursive: true,
   });
+  console.log(`>> All files are copied.`);
 }
