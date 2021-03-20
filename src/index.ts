@@ -3,19 +3,26 @@ import * as fsExtra from 'fs-extra';
 
 create();
 async function create() {
-  const tempPath = path.join(__dirname, '..', 'temp-resource');
   const samplePath = path.join(__dirname, '..', 'sample');
   const srcPath = path.join(__dirname);
 
-  try {
-    await fsExtra.ensureDir(tempPath);
-    console.error('temp-resource directory exists.');
-    process.exit(1);
-  } catch (err) {}
+  const filesToRemove = [
+    'package.json',
+    'package-lock.json',
+    'README.md',
+    'tsconfig.json',
+    '.npmignore',
+    '.gitignore',
+    '.github',
+    'dist',
+  ];
 
-  await fsExtra.emptyDir(srcPath);
-  await fsExtra.copy(samplePath, tempPath, {
-    filter(src, dest) {
+  for (const file of filesToRemove) {
+    await fsExtra.remove(path.join(srcPath, file));
+  }
+
+  await fsExtra.copy(samplePath, srcPath, {
+    filter(src) {
       if (src.includes('node_modules')) return false;
 
       return true;
