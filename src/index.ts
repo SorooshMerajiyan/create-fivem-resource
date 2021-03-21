@@ -34,4 +34,7 @@ async function create() {
     recursive: true,
   });
   console.log(`>> All files are copied.`);
+
+  await fsExtra.remove(samplePath);
+  console.log(`>> Removed sample dir.`);
 }

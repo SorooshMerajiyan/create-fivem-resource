@@ -2,7 +2,8 @@
   "name": "create-fivem-resource",
   "version": "0.0.4",
   "description": "",
-  "main": "dist/index.js",
+  "main": "./dist/index.js",
+  "bin": "./cli.js",
   "scripts": {
     "build": "tsc",
     "create-fivem-resource": "npm i && node dist/index.js && npm i"
