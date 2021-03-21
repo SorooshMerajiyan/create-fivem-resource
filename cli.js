@@ -3,8 +3,24 @@ const { execSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
-create();
+const devLog = console.log;
+
+create()
+  .then(() => {
+    console.log(`>> Completed.`);
+    process.exit(0);
+  })
+  .catch((err) => {
+    console.error(`XX Failed.`);
+    console.error(err);
+    process.exit(1);
+  });
+
 async function create() {
+  devLog(`Current path: ${__dirname}`);
+  const currentFiles = execSync('ls');
+  devLog(`Current files: ${currentFiles}`);
+
   const dirName = process.argv[2];
 
   if (!dirName) {
@@ -12,6 +28,7 @@ async function create() {
   }
 
   const dirPath = path.join(__dirname, dirName);
+  devLog(`dirPath: ${dirPath}`);
 
   const dirExists = fs.existsSync(dirPath);
 
@@ -20,13 +37,23 @@ async function create() {
   }
 
   fs.mkdirSync(dirPath);
+  devLog(`Created dir at ${dirPath}`);
 
   execSync(`cd ./${dirName} && npm init -y && npm install fs-extra`);
 
-  const fsExtra = require(path.join(dirPath, 'node_modules', 'fs-extra'));
+  const internalFsPath = path.join(dirPath, 'node_modules', 'fs-extra');
+
+  devLog(`Internal fs path: ${internalFsPath}`);
+
+  const fsExtra = require(internalFsPath);
 
   const samplePath = path.join(__dirname, 'sample');
+
+  devLog(`Sample path: ${samplePath}`);
+
   const mainPath = path.join(__dirname);
+
+  devLog(`Main path: ${mainPath}`);
 
   const filesToRemove = [
     'package.json',
