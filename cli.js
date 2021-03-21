@@ -1,9 +1,62 @@
 #!/usr/bin/env node
-const { exec } = require('child_process');
+const { execSync } = require('child_process');
+const fs = require('fs');
+const path = require('path');
 
-exec('npm run create-fivem-resource', (err) => {
-  if (err) {
-    console.error(err);
-    process.exit(1);
+create();
+async function create() {
+  const dirName = process.argv[2];
+
+  if (!dirName) {
+    throw new Error(`Invalid dirname of ${dirName}`);
   }
-});
+
+  const dirPath = path.join(__dirname, dirName);
+
+  const dirExists = fs.existsSync(dirPath);
+
+  if (dirExists) {
+    throw new Error(`Dirname of ${dirName} already exists.`);
+  }
+
+  fs.mkdirSync(dirPath);
+
+  execSync(`cd ./${dirName} && npm init -y && npm install fs-extra`);
+
+  const fsExtra = require(path.join(dirPath, 'node_modules', 'fs-extra'));
+
+  const samplePath = path.join(__dirname, 'sample');
+  const mainPath = path.join(__dirname);
+
+  const filesToRemove = [
+    'package.json',
+    'package-lock.json',
+    'README.md',
+    'tsconfig.json',
+    '.npmignore',
+    '.gitignore',
+    '.github',
+    'dist',
+  ];
+
+  console.log(`>> Removing files.`);
+  for (const file of filesToRemove) {
+    await fsExtra.remove(path.join(mainPath, file));
+  }
+
+  console.log(`>> Removed ${filesToRemove.length} files.`);
+
+  console.log(`>> Copying files.`);
+  await fsExtra.copy(samplePath, mainPath, {
+    filter(src) {
+      if (src.includes('node_modules')) return false;
+
+      return true;
+    },
+    recursive: true,
+  });
+  console.log(`>> All files are copied.`);
+
+  await fsExtra.remove(samplePath);
+  console.log(`>> Removed sample dir.`);
+}
